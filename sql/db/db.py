@@ -61,7 +61,6 @@ def add_user(user: User) -> UserUpdate:
 
 def auth_user(username: str = Query(...), password: str = Query(...)) -> UserUpdate:
     us = session.query(TableUser).filter_by(username=username).first()
-    print("fdfd",json.loads(us.passed_tests))
     if us and us.password == password:
         token = "token_" + uuid.uuid4().__str__()
         stmt = update(TableUser).where(TableUser.id == us.id).values(token=token)
@@ -88,9 +87,8 @@ def update_passed(id_user: str, id_test: str):
     user = session.query(TableUser).filter_by(id=id_user).first()
     passed_tests = json.loads(user.passed_tests)
     passed_tests.append(id_test)
-    print("id_test: fjldskfhhhhhhhhhhhhhhhh",passed_tests)
-    passed_json=json.dumps(passed_tests)
-    user.passed_tests=passed_json
+    passed_json = json.dumps(passed_tests)
+    user.passed_tests = passed_json
     session.commit()
 
 

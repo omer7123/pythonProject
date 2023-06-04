@@ -1,3 +1,5 @@
+from fastapi import Query
+
 from shemas.tests import CreateTest, Test, TestInfo, PlayTest
 import sql.db.db_tests as db
 import sql.db.db as db_user
@@ -10,8 +12,9 @@ class TestService:
         if db_user.token_verification(test.user.token, test.id_authors):
             return db.create_test(test)
 
-    def get_tests(self) -> list[TestInfo]:
-        return db.get_tests()
+    def get_tests(self, id_user: str = Query(...), token: str = Query(...)) -> list[TestInfo]:
+        if db_user.token_verification(token, id_user):
+            return db.get_tests(id_user)
 
     def get_test(self, id: str) -> Test:
         return db.get_test(id)
@@ -34,5 +37,6 @@ class TestService:
         if db_user.token_verification(token, id):
             ids_list = db_user.get_correctly_ids_tests(id)
             return db.get_correctly_passed_tests(ids_list)
+
 
 test_service: TestService = TestService()

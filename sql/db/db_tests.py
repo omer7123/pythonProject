@@ -87,8 +87,8 @@ def table_to_test(test: TestTable):
     )
 
 
-def get_tests() -> list[TestInfo]:
-    tests = session.query(TestTable).filter(TestTable.access == True).all()
+def get_tests(id_user: str) -> list[TestInfo]:
+    tests = session.query(TestTable).filter(TestTable.access == True, TestTable.id_authors != id_user).all()
     return tests
 
 
@@ -112,13 +112,13 @@ def play_test(answers: PlayTest):
             session.commit()
 
             count = 0
-            for question in test.questions:
+            for question in answers.questions:
                 question_from_db = session.query(QuestionTable).filter(QuestionTable.id == question.id).first()
                 question_from_db_pydantic = Question.from_orm(question_from_db)
 
                 # +1 к passed вопроса
-                question.passed += 1
-                stmt = update(QuestionTable).where(QuestionTable.id == question.id).values(passed=question.passed)
+                question_from_db_pydantic.passed += 1
+                stmt = update(QuestionTable).where(QuestionTable.id == question.id).values(passed=question_from_db_pydantic.passed)
                 session.execute(stmt)
                 session.commit()
 
@@ -129,9 +129,9 @@ def play_test(answers: PlayTest):
                     if answer_from_db_p.right == True and answer.right == True:
                         count += 1
                         # +1 к passed_correctly вопроса
-                        question.passed_correctly += 1
+                        question_from_db_pydantic.passed_correctly += 1
                         stmt = update(QuestionTable).where(QuestionTable.id == question.id).values(
-                            passed_correctly=question.passed_correctly)
+                            passed_correctly=question_from_db_pydantic.passed_correctly)
                         session.execute(stmt)
                         session.commit()
 
@@ -169,6 +169,8 @@ def get_created_tests(id: str) -> list[TestInfo]:
 
 def get_correctly_passed_tests(passed_tests: list[str]):
     tests = []
+    passed_tests = list(set(passed_tests))
+    passed_tests.sort()
     for id_test in passed_tests:
         test = session.query(TestTable).filter(TestTable.id == id_test).first()
         tests.append(test)

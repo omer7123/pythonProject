@@ -18,8 +18,8 @@ def create_test(test: CreateTest) -> CreateTest:
     "/tests",
     response_model=list[TestInfo]
 )
-def get_tests():
-    return test_service.get_tests()
+def get_tests(id_user: str = Query(...), token: str = Query(...)):
+    return test_service.get_tests(id_user, token)
 
 
 @router.get(
