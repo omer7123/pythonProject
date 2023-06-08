@@ -21,9 +21,10 @@ class TestService:
 
     def play_test(self, answers: PlayTest):
         if db_user.token_verification(answers.user.token, answers.user.id):
-            if db.play_test(answers):
+            passed_test = db.play_test(answers)
+            if passed_test.result == "100.0%":
                 db_user.update_passed(answers.user.id, answers.id)
-            return db.play_test(answers)
+            return passed_test
 
     def refactor_access(self, id: str, user: UserInfo):
         if db_user.token_verification(user.token, user.id):

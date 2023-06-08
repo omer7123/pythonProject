@@ -107,8 +107,8 @@ def play_test(answers: PlayTest):
         if not test.id_authors == answers.user.id:
             # +1 к passed теста
             test.passed += 1
-            stmt = update(TestTable).where(TestTable.id == answers.id).values(passed=test.passed)
-            session.execute(stmt)
+            # stmt = update(TestTable).where(TestTable.id == answers.id).values(passed=passed_test)
+            # session.execute(stmt)
             session.commit()
 
             count = 0
@@ -139,8 +139,8 @@ def play_test(answers: PlayTest):
             if save == 100:
                 # +1 к passed_correctly теста
                 test.passed_correctly += 1
-                stmt = update(TestTable).where(TestTable.id == answers.id).values(passed_correctly=test.passed_correctly)
-                session.execute(stmt)
+                # stmt = update(TestTable).where(TestTable.id == answers.id).values(passed_correctly=test.passed_correctly)
+                # session.execute(stmt)
                 session.commit()
             test_result.result = save.__str__() + "%"
             return test_result
